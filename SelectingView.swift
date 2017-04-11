@@ -56,8 +56,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             cell = SongCell()
         case .SettingList:
             cell = SettingCell()
-        default:
-            break
+        case .Setting:
+            cell = colorCell()
         }
         
         cell.manageCell(infos: stateManager.currentMenu.getInfos(at: index))

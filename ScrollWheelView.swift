@@ -17,9 +17,9 @@ class ScrollWheelView: UIView {
     var pv:ViewController!
     
     // Layout informations ------------------------------------
-    var sideSize: Int = 220
-    var wheelWidth: Int = 70
-    var indicatorWidth: Int = 3
+    var sideSize: CGFloat = UIScreen.main.bounds.width*13/20
+    var wheelWidth: CGFloat = UIScreen.main.bounds.width/4
+    var indicatorWidth: CGFloat = 4
     
     // Views --------------------------------------------------
     var wheelView: WheelView!
@@ -31,6 +31,11 @@ class ScrollWheelView: UIView {
     
     // Buttons ------------------------------------------------
     var centerButton: UIButton!
+    
+    var top:UILabel!
+    var left:UIImageView!
+    var right: UIImageView!
+    var bottom: UIImageView!
     
     
     // Activity -----------------------------------------------
@@ -66,10 +71,10 @@ class ScrollWheelView: UIView {
         indicatorView = UIView()
         self.addSubview(indicatorView)
         
-        indicatorBackground = UIView.createCircularPath(color: #colorLiteral(red: 0.3645744324, green: 0.139585942, blue: 0.1319471896, alpha: 0.6913794949).cgColor, width: indicatorWidth, radius: sideSize)
+        indicatorBackground = UIView.createCircularPath(color: SettingManagement.getBottomColor().0.cgColor, width: indicatorWidth, radius: sideSize)
         indicatorView.layer.addSublayer(indicatorBackground)
         
-        indicator = UIView.createCircularPath(color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.7455854024).cgColor, width: indicatorWidth, radius: sideSize)
+        indicator = UIView.createCircularPath(color: SettingManagement.getBottomColor().2.cgColor, width: indicatorWidth, radius: sideSize)
         indicator.strokeEnd = CGFloat(0)
         indicatorView.layer.addSublayer(indicator)
         
@@ -83,14 +88,14 @@ class ScrollWheelView: UIView {
         // Center Button
         centerButton = UIButton()
         self.addSubview(centerButton)
-        let buttonSize = sideSize - wheelWidth*2
+        let buttonSize = wheelWidth
         
-        centerButton.backgroundColor = #colorLiteral(red: 0.1254716516, green: 0.125500828, blue: 0.1254698336, alpha: 1)
+        centerButton.backgroundColor = SettingManagement.getBottomColor().0
         centerButton.frame.size = CGSize(width: buttonSize, height: buttonSize)
         centerButton.layer.cornerRadius = CGFloat(buttonSize/2)
         centerButton.layer.position = CGPoint(x: sideSize/2, y: sideSize/2)
         centerButton.layer.borderWidth = CGFloat(5)
-        centerButton.layer.borderColor = UIColor.clear.cgColor
+        centerButton.layer.borderColor = SettingManagement.getBottomColor().0.cgColor
         centerButton.snp.makeConstraints{ make in
             make.center.equalToSuperview()
             make.size.equalTo(buttonSize)
@@ -100,28 +105,79 @@ class ScrollWheelView: UIView {
         self.bringSubview(toFront: wheelView)
         self.bringSubview(toFront: centerButton)
         
+        setupWheelButtons()
+        layoutLabels()
+        
         // Actions
         mapCenterButton(with: .select)
+    }
+    
+    func setupWheelButtons() {
+        
+        top = UILabel()
+        top.backgroundColor = UIColor.clear
+        top.text = "MENU"
+        top.font = UIFont.boldSystemFont(ofSize: 14.0)
+        top.sizeToFit()
+        self.addSubview(top)
+        
+        var nxt = #imageLiteral(resourceName: "playnext")
+        nxt = nxt.withRenderingMode(.alwaysTemplate)
+        
+        right = UIImageView()
+        right.image = nxt
+        
+        right.contentMode = .scaleAspectFill
+        self.addSubview(right)
+
+        var prev = #imageLiteral(resourceName: "playprevious")
+        prev = prev.withRenderingMode(.alwaysTemplate)
+        
+        left = UIImageView()
+        left.image = prev
+        left.contentMode = .scaleAspectFill
+        self.addSubview(left)
+        
+        var pp = #imageLiteral(resourceName: "playpause")
+        pp = pp.withRenderingMode(.alwaysTemplate)
+        
+        bottom = UIImageView()
+        bottom.image = pp
+        bottom.contentMode = .scaleAspectFill
+        self.addSubview(bottom)
+        
         
     }
     
-    // Indicator init -----------------------------------------
-    func setIndicator(duration:CGFloat,current:CGFloat = CGFloat(0)) {
+    func layoutLabels() {
         
-        guard (duration != -1) else {
-            guard (progressToyed) else {
-                progressToyed = true
-                progressAnimation.toValue = 0.00
-                progressAnimation.duration = 0.5
-                self.indicator.add(progressAnimation, forKey: "strokeEnd")
-                return
-            }
-            return
+        top.snp.makeConstraints{ make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().inset(15)
         }
+        left.snp.makeConstraints{ make in
+            make.centerY.equalToSuperview()
+            make.left.equalToSuperview().inset(15)
+            make.height.equalTo(10)
+            make.width.equalTo(20)
+        }
+        right.snp.makeConstraints{ make in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(15)
+            make.height.equalTo(10)
+            make.width.equalTo(20)
+        }
+        bottom.snp.makeConstraints{ make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(15)
+            make.height.equalTo(10)
+            make.width.equalTo(20)
+        }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        self.indicator.removeAllAnimations()
-        self.indicator.strokeEnd = current/duration
-        
+        print("dattouch")
     }
     
     // Mapping ------------------------------------------------
@@ -131,10 +187,25 @@ class ScrollWheelView: UIView {
     }
     
     // Change indicator in real time --------------------------
+    
     func setActiveIndicator(duration:CGFloat,current:CGFloat = CGFloat(0)) {
+        self.indicator.removeAnimation(forKey: "strokeEnd")
         progressAnimation.fromValue = current/duration
         progressAnimation.duration = Double(duration-current)
         progressAnimation.toValue = 1
+        self.indicator.add(progressAnimation, forKey: "strokeEnd")
+    }
+    
+    func setIndicator(duration:CGFloat,current:CGFloat = CGFloat(0)) {
+        self.indicator.removeAnimation(forKey: "strokeEnd")
+        self.indicator.strokeEnd = current/duration
+    }
+    
+    func resetIndicator(from: Double) {
+        self.indicator.removeAnimation(forKey: "strokeEnd")
+        progressAnimation.fromValue = from
+        progressAnimation.duration = 0.5
+        progressAnimation.toValue = 0
         self.indicator.add(progressAnimation, forKey: "strokeEnd")
     }
     
@@ -210,6 +281,13 @@ class ScrollWheelView: UIView {
                 
             case .centerButtonPan:
                 
+//                let forceTouch = traitCollection.forceTouchCapability == .unavailable
+//                guard false else {
+//                    guard let a = self.gestureRecognizers?.first else {return}
+//                    a.cancelsTouchesInView = true
+//                    return
+//                }
+                
                 guard t != nil && t!.isValid else {
                     
                     t = Timer.scheduledTimer(timeInterval: 0.4, target: self.pv, selector: Selector(("select")), userInfo: nil, repeats: false)
@@ -260,11 +338,22 @@ class ScrollWheelView: UIView {
             print("---------")
         }
     }
-    
-    
     // Other Stuff --------------------------------------------
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func colorize(indicator i:UIColor,indicatorBackground iB:UIColor, wheel w:UIColor, centerButt cB:UIColor, text: UIColor) {
+        indicator.strokeColor = i.cgColor
+        indicatorBackground.strokeColor = iB.withAlphaComponent(0).cgColor
+        wheelView.layer.borderColor = w.cgColor
+        centerButton.backgroundColor = cB
+        centerButton.layer.borderColor = cB.cgColor
+        
+        top.textColor = text
+        right.tintColor = text
+        left.tintColor = text
+        bottom.tintColor = text
     }
     
 }

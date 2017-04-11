@@ -48,7 +48,8 @@ class TopView: UIView {
     func setup() {
         
         self.selectCellView = UIView()
-        self.selectCellView.backgroundColor = #colorLiteral(red: 0.3645744324, green: 0.139585942, blue: 0.1319471896, alpha: 0.75)
+        let color = SettingManagement.getHue()
+        self.selectCellView.backgroundColor = color.0
         self.addSubview(selectCellView)
         
         contentView = UITableView()
@@ -111,6 +112,24 @@ class TopView: UIView {
         case .bottom:
             self.selectCellView.layer.position.y = contentView.rowHeight*CGFloat(contentView.visibleCells.count)-contentView.rowHeight/2
         }
+    }
+    
+    func colorize(hue:(UIColor,UIColor),screen:(UIColor,UIColor,UIColor)) {
+        let sm = SettingManagement.settings
+        if sm["Screen color"] == sm["Hue"] {
+            if sm["Hue"] == "White" {
+                selectCellView.backgroundColor = hue.1.withAlphaComponent(0.50)
+            } else {
+                selectCellView.backgroundColor = hue.1.withAlphaComponent(0.20)
+            }
+        } else {
+            if sm["Hue"] == "White" {
+                selectCellView.backgroundColor = hue.0.withAlphaComponent(0.20)
+            } else {
+                selectCellView.backgroundColor = hue.0.withAlphaComponent(0.60)
+            }
+        }
+        
     }
     
 }

@@ -28,24 +28,23 @@ protocol Option {
     
 }
 
-class Setting<E>: Option {
+class Setting: Option {
     
     var mapping:[Buttons:PrimaryActions] = [:]
     var name: String
-    var value: E
-    var possibleValues:[E]
+    var value: String
+    var possibleValues:[String] = []
     var parent: Option?
-    var type: StateType = StateType.SettingCell
+    var type: StateType = StateType.Setting
     var extraPanel:Option?
     var selectedRow: Int = 0
     
-    init(_ n:String, value:E ,possibleValues:[E] = []) {
+    init(_ n:String, value:String) {
         name = n
         self.value = value
-        self.possibleValues = possibleValues
     }
     
-    func getValue() -> E {
+    func getValue() -> String {
         return value
     }
     func setParent(p: Option) {
@@ -57,11 +56,11 @@ class Setting<E>: Option {
     }
     
     func getInfos(at i: Int) -> [String] {
-        return [name,"rgerg","fref","ref"]
+        return [possibleValues[i]]
     }
     
     func getNumberOfRow() -> Int {
-        return SettingManagement.amount
+        return possibleValues.count
     }
     
     func getContent(at i: Int) -> Any? {
@@ -71,6 +70,8 @@ class Setting<E>: Option {
         return []
     }
 }
+
+
 
 class MenuList: Option {
     
@@ -122,7 +123,7 @@ class MenuList: Option {
 
 class PlayableElementList: Option {
     
-    var mapping:[Buttons:PrimaryActions] = [.topRight: .goArtist]
+    var mapping:[Buttons:PrimaryActions] = [.topRight: .goArtist, .topLeft: .addNext, ]
     
     func getContent() -> [Any] {
         return [content]
@@ -187,11 +188,11 @@ class SettingList: Option {
     }
     
     func getInfos(at i: Int) -> [String] {
-        return content[i].getInfos(at: i)
+        return [content[i].name]
     }
     
     func getNumberOfRow() -> Int {
-        return SettingManagement.amount
+        return SettingManagement.settings.count
     }
     
     func getContent(at i: Int) -> Any? {
@@ -206,3 +207,4 @@ class SettingList: Option {
         child.setParent(p: self)
     }
 }
+

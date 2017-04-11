@@ -15,8 +15,8 @@ class WheelView: UIView {
     var pv:ViewController!
     
     // Size -----------------------------------------
-    var sideSize:Int!
-    var wheelWidth:Int!
+    var sideSize:CGFloat!
+    var wheelWidth:CGFloat!
     
     // Interaction vars -----------------------------
     var reference: CGPoint?
@@ -25,13 +25,14 @@ class WheelView: UIView {
     var direction:Bool = true
     
     // Buttons --------------------------------------
-    var top:UIButton!
-    var bottom:UIButton!
+    var top: UIButton!
+    var bottom: UIButton!
     var right: UIButton!
+    var left: UIButton!
     
     // ==============================================
     
-    convenience init(sideSize ss: Int, wheelWidth ww: Int) {
+    convenience init(sideSize ss: CGFloat, wheelWidth ww: CGFloat) {
         self.init()
         self.sideSize = ss
         self.wheelWidth = ww
@@ -39,7 +40,6 @@ class WheelView: UIView {
         layer.borderWidth = CGFloat(ww)
         frame.size = CGSize(width: ss, height: ss)
         layer.cornerRadius = CGFloat(ss/2)
-        self.layer.borderColor = #colorLiteral(red: 0.3645744324, green: 0.139585942, blue: 0.1319471896, alpha: 1).cgColor
         
         setupWheelButtons()
         layoutButtons()
@@ -48,6 +48,7 @@ class WheelView: UIView {
         top.addTarget(pv, action: #selector(pv.back), for: .touchUpInside)
         bottom.addTarget(pv, action: #selector(pv.play), for: .touchUpInside)
         right.addTarget(pv, action: #selector(pv.playNext), for: .touchUpInside)
+        left.addTarget(pv, action: #selector(pv.playPrevious), for: .touchUpInside)
     }
     
     func setupWheelButtons() {
@@ -63,6 +64,10 @@ class WheelView: UIView {
         right = UIButton()
         right.backgroundColor = UIColor.clear
         self.addSubview(right)
+        
+        left = UIButton()
+        left.backgroundColor = UIColor.clear
+        self.addSubview(left)
     }
     
     func layoutButtons() {
@@ -87,6 +92,13 @@ class WheelView: UIView {
             make.width.equalToSuperview().dividedBy(3.2)
             make.height.equalToSuperview().dividedBy(2)
         }
+        
+        left.snp.makeConstraints{ make in
+            make.centerY.equalToSuperview()
+            make.left.equalToSuperview()
+            make.width.equalToSuperview().dividedBy(3.2)
+            make.height.equalToSuperview().dividedBy(2)
+        }
     }
     
     
@@ -100,8 +112,9 @@ class WheelView: UIView {
         if (distance<CGFloat(sideSize/2)) {
             if (distance>CGFloat((sideSize/2)-wheelWidth)) {
                 return "wheel"
+            } else if distance<CGFloat(20) {
+                return "centerButton"
             }
-            return "centerButton"
         }
         return "nothing"
     }

@@ -27,7 +27,7 @@ class SongCell: SomeCell {
         // Song
         songTitle = UILabel()
         songTitle.text = infos[0]
-        songTitle.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        songTitle.textColor = SettingManagement.getScreenColor().2
         self.addSubview(songTitle)
         
         
@@ -44,7 +44,7 @@ class SongCell: SomeCell {
         // Artist
         songArtist = UILabel()
         songArtist!.text = infos[1]
-        songArtist!.textColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        songArtist!.textColor = SettingManagement.getScreenColor().2.withAlphaComponent(0.7)
         self.addSubview(songArtist!)
         
         songArtist!.snp.makeConstraints { make in
@@ -66,7 +66,7 @@ class MenuCell: SomeCell {
         // Name
         cellName = UILabel()
         cellName.text = infos[0]
-        self.cellName.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        cellName.textColor = SettingManagement.getScreenColor().2
         self.addSubview(cellName)
         
         cellName.snp.makeConstraints { make in
@@ -74,7 +74,6 @@ class MenuCell: SomeCell {
             make.centerY.equalToSuperview()
         }
     }
-    
 }
 
 
@@ -82,7 +81,7 @@ class SettingCell: SomeCell {
     
     // Labels ------------------------------
     var cellName: UILabel!
-    var selectedOption: UILabel?
+    var selectedOption: UILabel!
     
     // Manage Cell -------------------------
     override func manageCell(infos:[String]) {
@@ -91,7 +90,7 @@ class SettingCell: SomeCell {
         // Name
         cellName = UILabel()
         cellName.text = infos[0]
-        cellName.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        cellName.textColor = SettingManagement.getScreenColor().2
         self.addSubview(cellName)
         
         cellName.snp.makeConstraints { make in
@@ -101,14 +100,52 @@ class SettingCell: SomeCell {
         
         // Selected Option?
         selectedOption = UILabel()
-        selectedOption!.text = infos[1]
-        selectedOption!.textColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-        self.addSubview(selectedOption!)
+        selectedOption.text = SettingManagement.settings[infos[0]]
+        selectedOption.textColor = SettingManagement.getScreenColor().2.withAlphaComponent(0.7)
+        self.addSubview(selectedOption)
             
         selectedOption!.snp.makeConstraints { make in
-            make.left.equalTo(cellName.snp.right).inset(-10)
+            make.right.equalToSuperview().inset(10)
+            make.centerY.equalToSuperview()
+        }
+    }
+}
+
+class colorCell: SomeCell {
+    
+    var colorName: UILabel!
+    var colorView: UIView!
+    
+    // Manage Cell -------------------------
+    override func manageCell(infos:[String]) {
+        self.backgroundColor = UIColor.clear
+        
+        // Color Name
+        colorName = UILabel()
+        colorName.text = infos[0]
+        colorName.textColor = SettingManagement.getScreenColor().2
+        self.addSubview(colorName)
+        
+        colorName.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(10)
             make.centerY.equalToSuperview()
         }
         
+        // Color View
+        colorView = UIView()
+        colorView.backgroundColor = SettingManagement.possibleHues[infos[0]]!.0
+        colorView.bounds.size = CGSize(width: 20, height: 20)
+        colorView.layer.cornerRadius = 2
+        colorView.layer.borderWidth = 1
+        colorView.layer.borderColor = SettingManagement.possibleHues[infos[0]]!.1.cgColor
+        self.addSubview(colorView)
+        
+        colorView.snp.makeConstraints { make in
+            make.height.equalToSuperview().inset(5)
+            make.width.equalTo(self.snp.height).inset(5)
+            make.right.equalToSuperview().inset(10)
+            make.centerY.equalToSuperview()
+            
+        }
     }
 }

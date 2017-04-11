@@ -12,22 +12,41 @@ import SnapKit
 
 class MappableButtons: UIButton {
     
+    var icon:UIImage!
+    
     convenience init(_ b:Buttons) {
         self.init()
     }
     
-    func setup() {
-        self.backgroundColor = #colorLiteral(red: 0.3645744324, green: 0.139585942, blue: 0.1319471896, alpha: 1)
-        self.frame.size = CGSize(width: 50, height: 50)
-        self.layer.cornerRadius = CGFloat(25)
+    func setup(_ s: CGFloat) {
+        self.frame.size = CGSize(width: s, height: s)
+        self.layer.cornerRadius = CGFloat(s/2)
+        self.layer.borderColor = UIColor.white.cgColor
+        self.layer.borderWidth = CGFloat(1)
     }
     
     func setBackGround(a: PrimaryActions){
+        self.layer.borderColor = UIColor.white.cgColor
         switch a {
         case .goArtist:
-            self.setBackgroundImage(#imageLiteral(resourceName: "Image"), for: UIControlState.normal)
+            self.icon = #imageLiteral(resourceName: "artist")
+            self.icon = icon.withRenderingMode(.alwaysTemplate)
+            self.setBackgroundImage(icon, for: UIControlState.normal)
+            self.backgroundColor = SettingManagement.getHue().0
+        case .addNext:
+            self.icon = #imageLiteral(resourceName: "addnext")
+            self.icon = icon.withRenderingMode(.alwaysTemplate)
+            self.setBackgroundImage(icon, for: UIControlState.normal)
+            self.backgroundColor = SettingManagement.getHue().0
+        case .goQueue:
+            self.icon = #imageLiteral(resourceName: "queue")
+            self.icon = icon.withRenderingMode(.alwaysTemplate)
+            self.setBackgroundImage(icon, for: UIControlState.normal)
+            self.backgroundColor = SettingManagement.getHue().0
         default:
             self.setBackgroundImage(nil, for: UIControlState.normal)
+            self.layer.borderColor = UIColor.clear.cgColor
+            self.backgroundColor = UIColor.clear
         }
     }
     
